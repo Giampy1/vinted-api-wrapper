@@ -1,20 +1,23 @@
-import requests
 import time
+from copy import deepcopy
+from typing import List, Literal
+from urllib.parse import urlencode, urlparse, urlunparse
+
+import requests
+from dacite import from_dict
 
 from .endpoints import Endpoints
 from .models.base import VintedResponse
-from .models.filters import FiltersResponse, InitializersResponse, Catalog
+from .models.filters import Catalog, FiltersResponse, InitializersResponse
 from .models.items import ItemsResponse, UserItemsResponse
 from .models.other import Domain, SortOption
-from .models.search import SearchResponse, UserSearchResponse, SearchSuggestionsResponse
+from .models.search import SearchResponse, SearchSuggestionsResponse, UserSearchResponse
 from .models.users import (
-    UserResponse,
     UserFeedbacksResponse,
     UserFeedbacksSummaryResponse,
+    UserResponse,
 )
 from .utils import parse_url_to_params
-from dacite import from_dict
-from typing import List, Literal
 
 
 class Vinted:
@@ -34,6 +37,24 @@ class Vinted:
         return response.cookies
 
     def _call(self, method: Literal["get"], *args, **kwargs):
+        if params := kwargs.pop("params"):
+            updated_params = deepcopy(params)
+
+            # Replace None values with empty strings
+            processed_params = {
+                k: "" if v is None else v for k, v in updated_params.items()
+            }
+
+            # Encode parameters with '+' left untouched
+            encoded_params = urlencode(processed_params, safe="+")
+
+            # Assign updated params directly to the url as string
+            updated_url = kwargs.get("url")
+            updated_url = urlunparse(
+                urlparse(updated_url)._replace(query=encoded_params)
+            )
+            kwargs["url"] = updated_url
+
         return requests.request(
             method=method, headers=self.headers, cookies=self.cookies, *args, **kwargs
         )
