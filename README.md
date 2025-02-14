@@ -121,6 +121,22 @@ vinted = Vinted()
 vinted = Vinted(domain="fr")
 ```
 
+* To use a proxy for API requests, you can configure it when initializing the Vinted object:
+```python
+# Configure proxy settings
+proxy_settings = {
+    'username': 'your_proxy_username',
+    'password': 'your_proxy_password',
+    'host': 'proxy_host',
+    'port': 'proxy_port'
+}
+
+# Create proxy URL
+proxy_url = f"http://{proxy_settings['username']}:{proxy_settings['password']}@{proxy_settings['host']}:{proxy_settings['port']}"
+
+# Initialize Vinted with proxy
+vinted = Vinted(domain="fr", proxy=proxy_url)
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

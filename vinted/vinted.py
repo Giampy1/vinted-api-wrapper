@@ -24,7 +24,14 @@ class Vinted:
     def __init__(
         self,
         domain: Domain = "pl",
+        proxy: str = None
     ) -> None:
+        self.proxy = None
+        if proxy:
+            self.proxy = {
+                'http': proxy,
+                'https': proxy
+            }
         self.base_url = f"https://www.vinted.{domain}"
         self.api_url = f"{self.base_url}/api/v2"
         self.headers = {
@@ -33,7 +40,7 @@ class Vinted:
         self.cookies = self.fetch_cookies()
 
     def fetch_cookies(self):
-        response = requests.get(self.base_url, headers=self.headers)
+        response = requests.get(self.base_url, headers=self.headers, proxies=self.proxy)
         return response.cookies
 
     def _call(self, method: Literal["get"], *args, **kwargs):
@@ -56,7 +63,7 @@ class Vinted:
             kwargs["url"] = updated_url
 
         return requests.request(
-            method=method, headers=self.headers, cookies=self.cookies, *args, **kwargs
+            method=method, headers=self.headers, cookies=self.cookies, proxies=self.proxy, *args, **kwargs
         )
 
     def _get(
