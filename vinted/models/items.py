@@ -70,7 +70,7 @@ class Item:
     title: str
     price: Optional[Price | str]
     is_visible: bool
-    discount: Any
+    discount: Optional[Any]
     brand_title: Optional[str]
     user: User
     url: str
@@ -78,7 +78,7 @@ class Item:
     photo: ItemPhoto
     favourite_count: int
     is_favourite: bool
-    badge: Any
+    badge: Optional[Any]
     conversion: Optional[Conversion]
     service_fee: Optional[CurrencyAmount | str]
     total_item_price: Optional[CurrencyAmount | str]
@@ -207,7 +207,7 @@ class DetailedItem:
     performance: Any
     stats_visible: bool
     can_push_up: bool
-    badge: Any
+    badge: Optional[Any]
     size_guide_faq_entry_id: Any
     localization: Any
     offline_verification: bool

@@ -6,6 +6,14 @@ from urllib.parse import urlencode, urlparse, urlunparse
 import requests
 from dacite import from_dict
 
+# fix dependencies
+
+from pprint import pp
+import json
+
+# /
+
+
 from .endpoints import Endpoints
 from .models.base import VintedResponse
 from .models.filters import Catalog, FiltersResponse, InitializersResponse
