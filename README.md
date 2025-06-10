@@ -150,7 +150,7 @@ The Vinted class provides several useful methods to interact with Vinted's API. 
 
 * Search for Products: Search the Vinted marketplace by keywords and filters OR search url (more in docs).
     ```python
-    items = vinted.search("sneakers", catalog_id=1, brand_id=100)
+    items = vinted.search(query="sneakers", catalog_ids=1, brand_ids=100)
     # SearchResponse(code=0, pagination=Pagination(...), dominant_brand=DominantBrand(...), items=[Item(id=1234567890, title='Nike shoes', price='35.0', is_visible=True, discount=None, brand_title='Nike', user=User(id=987654, login='foobar', ...more), url='https://www.vinted.pl/items/1234567890-nike-shoes', promoted=False, photo=ItemPhoto(...), favourite_count=0, service_fee='4.65', total_item_price='39.65', view_count=0, content_source='search',, search_tracking_params=SearchParams(...)), Item(...)], search_tracking_params=SearchTrackingParams(...)
     ```
 * Get User Information: Retrieve details about a specific user.
