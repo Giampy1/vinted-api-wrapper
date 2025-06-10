@@ -98,7 +98,7 @@ class DetailedUser:
     bundle_discount: Optional[BundleDiscount]
     fundraiser: Any
     business_account_id: Any
-    has_ship_fast_badge: bool
+    has_ship_fast_badge: Optional[bool]
     total_items_count: int
     about: str
     verification: UserVerification
