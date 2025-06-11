@@ -6,6 +6,14 @@ from urllib.parse import urlencode, urlparse, urlunparse
 import requests
 from dacite import from_dict
 
+# fix dependencies
+
+from pprint import pp
+import json
+
+# /
+
+
 from .endpoints import Endpoints
 from .models.base import VintedResponse
 from .models.filters import Catalog, FiltersResponse, InitializersResponse
@@ -61,6 +69,9 @@ class Vinted:
                 urlparse(updated_url)._replace(query=encoded_params)
             )
             kwargs["url"] = updated_url
+        
+        if "recursive" in kwargs:
+            del kwargs["recursive"]
 
         return requests.request(
             method=method, headers=self.headers, cookies=self.cookies, proxies=self.proxy, *args, **kwargs
@@ -93,6 +104,7 @@ class Vinted:
             )
         try:
             json_response = response.json()
+            pp(json_response)
             return from_dict(response_model, json_response)
         except requests.exceptions.JSONDecodeError:
             return {"error": f"HTTP {response.status_code}"}
@@ -146,7 +158,7 @@ class Vinted:
 
     def user_info(self, user_id: int, localize: bool = False) -> UserResponse:
         params = {"localize": localize}
-        return self._get(Endpoints.USER, UserResponse, user_id, params=params)
+        return self._get(Endpoints.USER, UserResponse, user_id, params=params) # this raises 'dacite.exceptions.MissingValueError: missing value for field "user"' for non valid user id
 
     def user_items(
         self,
