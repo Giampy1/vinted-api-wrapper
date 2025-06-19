@@ -21,6 +21,13 @@ from .models.users import (
 )
 from .utils import parse_url_to_params
 
+# Set up logging - datetime format, level, and format
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
+
 logger = logging.getLogger(__name__)
 
 
