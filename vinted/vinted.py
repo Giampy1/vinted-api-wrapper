@@ -1,9 +1,11 @@
+import logging
 import time
 from copy import deepcopy
 from typing import List, Literal
 from urllib.parse import urlencode, urlparse, urlunparse
 
 import requests
+from bs4 import BeautifulSoup
 from dacite import from_dict
 
 from .endpoints import Endpoints
@@ -18,6 +20,8 @@ from .models.users import (
     UserResponse,
 )
 from .utils import parse_url_to_params
+
+logger = logging.getLogger(__name__)
 
 
 class Vinted:
@@ -37,7 +41,7 @@ class Vinted:
         return response.cookies
 
     def _call(self, method: Literal["get"], *args, **kwargs):
-        if params := kwargs.pop("params"):
+        if params := kwargs.pop("params", {}):
             updated_params = deepcopy(params)
 
             # Replace None values with empty strings
@@ -216,3 +220,28 @@ class Vinted:
             params={"page": 1, "time": time.time()},
         )
         return data.dtos.catalogs
+
+    def fetch_offer_description(self, url: str) -> str:
+        """
+        Fetches the offer description from a given Vinted item URL.
+        :param url: The URL of the Vinted item.
+        :return: The description of the item.
+        """
+        try:
+            response = requests.get(
+                url, headers=self.headers, proxies=self.proxy, cookies=self.cookies
+            )
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, "html.parser")
+                description = soup.find("div", {"itemprop": "description"})
+                if description:
+                    return description.get_text(strip=True)
+                else:
+                    logger.error("Description not found in the page.")
+                    return None
+            else:
+                logger.error(f"Error fetching description: {response.status_code}")
+                return None
+        except requests.RequestException as e:
+            logger.error(f"An error occurred while fetching the description: {e}")
+            return None
