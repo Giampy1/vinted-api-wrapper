@@ -110,110 +110,52 @@ class DetailedItem:
     id: int
     title: str
     brand_id: Optional[int]
-    size_id: Any
     status_id: int
-    user_id: int
-    country_id: int
     catalog_id: int
-    color1_id: Any
-    color2_id: Any
-    package_size_id: int
-    is_unisex: int
-    moderation_status: int
     is_hidden: bool
-    is_visible: bool
     is_closed: bool
     favourite_count: int
-    active_bid_count: int
     description: str
-    package_size_standard: bool
     item_closing_action: Any
-    related_catalog_ids: List[Any]
-    related_catalogs_enabled: bool
-    size: Optional[str]
-    brand: Optional[str]
     composition: Optional[str]
     extra_conditions: Optional[str]
     disposal_conditions: Optional[int]
-    is_for_sell: bool
-    is_handicraft: bool
     is_processing: bool
     is_draft: bool
     is_reserved: bool
     label: Optional[str]
     original_price_numeric: float | str
     currency: Optional[str]
-    price_numeric: float | str
-    last_push_up_at: Optional[str]
-    created_at_ts: Optional[str]
-    updated_at_ts: Optional[str]
-    user_updated_at_ts: Optional[str]
-    is_delayed_publication: bool
+    price: float | str
     photos: List[ItemPhoto]
-    can_be_sold: bool
-    can_feedback: bool
-    item_reservation_id: Any
-    promoted_until: Any
-    promoted_internationally: Any
-    discount_price_numeric: Any
-    author: Any
-    book_title: Any
-    isbn: Any
-    measurement_width: Any
-    measurement_length: Any
-    measurement_unit: Any
-    manufacturer: Any
-    manufacturer_labelling: Any
     transaction_permitted: bool
-    video_game_rating_id: Any
-    item_attributes: List[ItemAttribute]
     user: DetailedUser
     price: CurrencyAmount
-    discount_price: Any
     service_fee: Optional[str | float]
     total_item_price: Optional[str | float]
     can_edit: bool
     can_delete: bool
     can_reserve: bool
-    can_mark_as_sold: bool
-    can_transfer: bool
-    instant_buy: bool
-    can_close: bool
     can_buy: bool
     can_bundle: bool
-    can_ask_seller: bool
-    can_favourite: bool
-    user_login: Optional[str]
     city_id: Optional[int]
     city: Optional[str]
     country: Optional[str]
     promoted: bool
-    is_mobile: bool
-    bump_badge_visible: bool
     brand_dto: BrandDto
-    catalog_branch_title: str
     path: str
     url: str
-    accepted_pay_in_methods: List[MethodPay]
-    created_at: str
     color1: Any
-    color2: Any
-    size_title: Optional[str]
-    description_attributes: List[DescriptionAttribute]
-    video_game_rating: Any
     status: str
     is_favourite: bool
     view_count: int
-    performance: Any
     stats_visible: bool
     can_push_up: bool
     badge: Optional[Any]
-    size_guide_faq_entry_id: Any
     localization: Any
     offline_verification: bool
     offline_verification_fee: Any
     icon_badges: Optional[list]
-    item_box: ItemBox
 
 
 @dataclass

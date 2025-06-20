@@ -125,6 +125,7 @@ class Vinted:
         color_ids: int | List[int] = None,
         patterns_ids: int | List[int] = None,
         material_ids: int | List[int] = None,
+        video_game_platform_ids: int | List[int] = None,
     ) -> SearchResponse:
         params = {
             "page": page,
@@ -141,6 +142,7 @@ class Vinted:
             "color_ids": color_ids,
             "patterns_ids": patterns_ids,
             "material_ids": material_ids,
+            "video_game_platforms_ids": video_game_platform_ids,
         }
         if url:
             params.update(parse_url_to_params(url))

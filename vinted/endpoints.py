@@ -5,7 +5,7 @@ class Endpoints(Enum):
     CATALOG_ITEMS = "/catalog/items"
     CATALOG_FILTERS = "/catalog/filters"
     CATALOG_INITIALIZERS = "/catalog/initializers"
-    ITEMS = "/items/{}"
+    ITEMS = "/items/{}/details"
     USERS = "/users"
     USER = "/users/{}"
     USER_FEEDBACKS = "/user_feedbacks"
