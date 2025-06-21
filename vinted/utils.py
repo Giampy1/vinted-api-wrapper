@@ -35,10 +35,13 @@ def parse_url_to_params(url: str):
                 if param_name in missing_ids_params:
                     param_name = f"{param_name}_id"
 
-                if param_name + "s" in mapped_params:
-                    mapped_params[param_name + "s"].append(param_value)
+                key_name = param_name if param_name.endswith("s") else f"{param_name}s"
+
+                if key_name in mapped_params:
+                    mapped_params[key_name].append(param_value)
                 else:
-                    mapped_params[param_name + "s"] = [param_value]
+                    mapped_params[key_name] = [param_value]
+
             else:
                 mapped_params[param_name] = param_value
 
