@@ -10,7 +10,8 @@ setup(
     author="Paweł Stawikowski",
     author_email="pawikoski@gmail.com",
     packages=find_packages(),
-    url="https://github.com/Pawikoski/vinted-api-wrapper",
+    url="=https://github.com/Pawikoski/vinted-api-wrapper",
+    python_requires=">=3.10",
     install_requires=["requests", "dacite", "beautifulsoup4"],
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,6 +19,7 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
