@@ -106,7 +106,7 @@ class DescriptionAttribute:
 
 
 @dataclass
-class DetailedItem: # Unfortunately, the response format has changed significantly
+class DetailedItem:
     id: int
     title: str
     brand_id: Optional[int]

@@ -5,7 +5,7 @@ class Endpoints(Enum):
     CATALOG_ITEMS = "/catalog/items"
     CATALOG_FILTERS = "/catalog/filters"
     CATALOG_INITIALIZERS = "/catalog/initializers"
-    ITEMS = "/items/{}/details"
+    ITEMS = "/items/{}/details"  # Old endpoint /items/{id} is deprecated, use /items/{id}/details instead
     USERS = "/users"
     USER = "/users/{}"
     USER_FEEDBACKS = "/user_feedbacks"
