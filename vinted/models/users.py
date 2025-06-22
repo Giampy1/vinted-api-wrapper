@@ -192,3 +192,39 @@ class UserFeedbacksResponse(VintedResponse):
 @dataclass
 class UserResponse(VintedResponse):
     user: DetailedUser
+
+
+@dataclass
+class SellerBadge:
+    type: str
+
+
+@dataclass
+class ItemUser:
+    id: int
+    login: str
+    country_id: int
+    feedback_count: int
+    feedback_reputation: float
+    moderator: bool
+    can_bundle: bool
+    business_account: Any
+    business: bool
+    photo: Optional[UserPhoto]
+    can_view_profile: bool
+    bundle_discount: Any
+    country_title_local: str
+    last_loged_on_ts: str
+    last_logged_on_ts: str
+    item_count: int
+    is_on_holiday: bool
+    expose_location: bool
+    city: str
+    locale: str
+    followers_count: Optional[int]
+    following_count: Optional[int]
+    is_banned: bool
+    is_favourite: bool
+    seller_badges: List[SellerBadge]
+    is_hated: bool
+    hates_you: bool

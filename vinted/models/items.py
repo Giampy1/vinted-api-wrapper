@@ -1,7 +1,7 @@
 from .base import VintedResponse
 from .money import CurrencyAmount, Conversion, MethodPay, Price
 from .photos import PhotoHighResolution, PhotoThumbnail
-from .users import UserPhoto, DetailedUser
+from .users import UserPhoto, ItemUser
 from dataclasses import dataclass
 from typing import List, Any, Optional
 from numbers import Number
@@ -31,6 +31,15 @@ class BrandDto:
     is_hvf: bool
     path: Optional[str]
     url: Optional[str]
+    is_favourite: bool
+
+
+@dataclass
+class BrandDtoShort:
+    id: int
+    title: Optional[str]
+    slug: Optional[str]
+    path: Optional[str]
     is_favourite: bool
 
 
@@ -106,119 +115,65 @@ class DescriptionAttribute:
 
 
 @dataclass
+class ItemAlert:
+    # TODO: Define structure
+    pass
+
+
+@dataclass
 class DetailedItem:
     id: int
     title: str
-    brand_id: Optional[int]
-    size_id: Any
+    description: Optional[str]
     status_id: int
-    user_id: int
-    country_id: int
+    disposal_conditions: int
     catalog_id: int
-    color1_id: Any
-    color2_id: Any
-    package_size_id: int
-    is_unisex: int
-    moderation_status: int
     is_hidden: bool
-    is_visible: bool
-    is_closed: bool
-    favourite_count: int
-    active_bid_count: int
-    description: str
-    package_size_standard: bool
-    item_closing_action: Any
-    related_catalog_ids: List[Any]
-    related_catalogs_enabled: bool
-    size: Optional[str]
-    brand: Optional[str]
-    composition: Optional[str]
-    extra_conditions: Optional[str]
-    disposal_conditions: Optional[int]
-    is_for_sell: bool
-    is_handicraft: bool
-    is_processing: bool
-    is_draft: bool
+    is_hidden_with_item_restrictions: bool
     is_reserved: bool
-    label: Optional[str]
-    original_price_numeric: float | str
-    currency: Optional[str]
-    price_numeric: float | str
-    last_push_up_at: Optional[str]
-    created_at_ts: Optional[str]
-    updated_at_ts: Optional[str]
-    user_updated_at_ts: Optional[str]
-    is_delayed_publication: bool
+    is_closed: bool
+    is_draft: bool
+    is_processing: bool
+    item_closing_action: Optional[Any]
+    currency: str
     photos: List[ItemPhoto]
-    can_be_sold: bool
-    can_feedback: bool
-    item_reservation_id: Any
-    promoted_until: Any
-    promoted_internationally: Any
-    discount_price_numeric: Any
-    author: Any
-    book_title: Any
-    isbn: Any
-    measurement_width: Any
-    measurement_length: Any
-    measurement_unit: Any
-    manufacturer: Any
-    manufacturer_labelling: Any
+    price: str
     transaction_permitted: bool
-    video_game_rating_id: Any
-    item_attributes: List[ItemAttribute]
-    user: DetailedUser
-    price: CurrencyAmount
-    discount_price: Any
-    service_fee: Optional[str | float]
-    total_item_price: Optional[str | float]
+    transaction_permitted_with_item_restrictions: bool
+    reservation: Optional[Any]
+    offline_verification: bool
+    offer_price: Optional[str]
+    conversion: Optional[Conversion]
+    is_cross_currency_payment: bool
+    favourite_count: int
+    is_favourite: bool
+    view_count: int
+    user: ItemUser
     can_edit: bool
     can_delete: bool
     can_reserve: bool
-    can_mark_as_sold: bool
-    can_transfer: bool
     instant_buy: bool
-    can_close: bool
     can_buy: bool
     can_bundle: bool
-    can_ask_seller: bool
-    can_favourite: bool
-    user_login: Optional[str]
-    city_id: Optional[int]
-    city: Optional[str]
-    country: Optional[str]
     promoted: bool
-    is_mobile: bool
-    bump_badge_visible: bool
-    brand_dto: BrandDto
-    catalog_branch_title: str
+    brand_dto: Optional[BrandDtoShort]
     path: str
     url: str
-    accepted_pay_in_methods: List[MethodPay]
-    created_at: str
-    color1: Any
-    color2: Any
-    size_title: Optional[str]
-    description_attributes: List[DescriptionAttribute]
-    video_game_rating: Any
+    color1: Optional[Any]
     status: str
-    is_favourite: bool
-    view_count: int
-    performance: Any
-    stats_visible: bool
+    localization: str
+    item_alert: Optional[ItemAlert]
+    service_fee: str
+    offline_verification_fee: Optional[str]
+    total_item_price: str
     can_push_up: bool
-    badge: Optional[Any]
-    size_guide_faq_entry_id: Any
-    localization: Any
-    offline_verification: bool
-    offline_verification_fee: Any
-    icon_badges: Optional[list]
-    item_box: ItemBox
+    stats_visible: bool
 
 
 @dataclass
 class ItemsResponse(VintedResponse):
     item: DetailedItem
+    plugins: Optional[List[Any]]  # TODO: Define a proper type for plugins
 
 
 @dataclass
