@@ -72,6 +72,19 @@ class Vinted:
         """
         logger.setLevel(level)
         logger.info(f"Logging level set to: {logging.getLevelName(level)}")
+    
+    def update_proxy(self, proxy: str) -> None:
+        """
+        Update the proxy configuration for the Vinted client.
+
+        Args:
+            proxy: Proxy URL to be used for requests.
+
+        Example:
+            vinted.update_proxy("http://username:password@proxyserver:port")
+        """
+        self.proxy = {"http": proxy, "https": proxy}
+        logger.info(f"Proxy updated: {self.proxy}")
 
     def fetch_cookies(self):
         logger.debug(f"Fetching cookies from: {self.base_url}")
@@ -125,11 +138,14 @@ class Vinted:
             *args,
             **kwargs,
         )
+        logger.info(f"Response size: {len(response.content) / 1024:.2f} KB")
         logger.info(f"Request completed with status code: {response.status_code}")
         if response.status_code == 429:
             raise RateLimitExceededException(
                 "Rate limit exceeded. Please try again later."
             )
+        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+        logger.debug(f"Response content: {response.text[:100]}...")  # Log
         return response
 
     def _get(
@@ -153,7 +169,6 @@ class Vinted:
             logger.debug(f"Standard endpoint URL: {url}")
 
         response = self._call(method="get", url=url, *args, **kwargs)
-        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
 
         if response.status_code != wanted_status_code and not kwargs.get("recursive"):
             logger.info(
