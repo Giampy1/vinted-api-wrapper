@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="vinted-api-wrapper",
-    version="0.3.7",
+    version="0.3.8",
     description="Unofficial Wrapper for Vinted API",
     author="Paweł Stawikowski",
     author_email="pawikoski@gmail.com",
