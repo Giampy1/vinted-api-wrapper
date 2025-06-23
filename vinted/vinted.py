@@ -8,8 +8,8 @@ import requests
 from bs4 import BeautifulSoup
 from dacite import from_dict
 
-from .exceptions import RateLimitExceededException
 from .endpoints import Endpoints
+from .exceptions import RateLimitExceededException
 from .models.base import VintedResponse
 from .models.filters import Catalog, FiltersResponse, InitializersResponse
 from .models.items import ItemsResponse, UserItemsResponse
@@ -23,46 +23,70 @@ from .models.users import (
 from .utils import parse_url_to_params
 
 # Set up logging - datetime format, level, and format
+# Default to INFO level, but allow users to change it via logging.getLogger(__name__).setLevel()
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
+    level=logging.DEBUG,  # Set to DEBUG to capture all levels, individual loggers can filter
 )
 
 logger = logging.getLogger(__name__)
+# Set default level to INFO, but users can override with logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class Vinted:
     def __init__(self, domain: Domain = "pl", proxy: str = None) -> None:
-        logger.info(f"Initializing Vinted client with domain: {domain}, proxy: {'enabled' if proxy else 'disabled'}")
-        
+        logger.info(
+            f"Initializing Vinted client with domain: {domain}, proxy: {'enabled' if proxy else 'disabled'}"
+        )
+
         self.proxy = None
         if proxy:
             self.proxy = {"http": proxy, "https": proxy}
             logger.debug(f"Proxy configuration set: {self.proxy}")
-        
+
         self.base_url = f"https://www.vinted.{domain}"
         self.api_url = f"{self.base_url}/api/v2"
         logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")
-        
+
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
         }
         logger.debug(f"Headers configured: {self.headers}")
-        
+
         self.cookies = self.fetch_cookies()
         logger.info("Vinted client initialization completed successfully")
+
+    def set_log_level(self, level: int) -> None:
+        """
+        Set the logging level for the Vinted module.
+
+        Args:
+            level: Logging level (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR)
+
+        Example:
+            import logging
+            vinted = Vinted()
+            vinted.set_log_level(logging.DEBUG)  # Enable debug logging
+        """
+        logger.setLevel(level)
+        logger.info(f"Logging level set to: {logging.getLevelName(level)}")
 
     def fetch_cookies(self):
         logger.debug(f"Fetching cookies from: {self.base_url}")
         response = requests.get(self.base_url, headers=self.headers, proxies=self.proxy)
-        logger.info(f"Cookies fetched successfully, status code: {response.status_code}")
+        logger.info(
+            f"Cookies fetched successfully, status code: {response.status_code}"
+        )
         logger.debug(f"Cookies: {response.cookies}")
         return response.cookies
 
     def _call(self, method: Literal["get"], *args, **kwargs):
-        logger.debug(f"Making {method.upper()} request with args: {args}, kwargs: {kwargs}")
-        
+        logger.debug(
+            f"Making {method.upper()} request with args: {args}, kwargs: {kwargs}"
+        )
+
         if params := kwargs.pop("params", {}):
             logger.debug(f"Processing parameters: {params}")
             updated_params = deepcopy(params)
@@ -71,7 +95,9 @@ class Vinted:
             processed_params = {
                 k: "" if v is None else v for k, v in updated_params.items()
             }
-            logger.debug(f"Processed parameters (None -> empty string): {processed_params}")
+            logger.debug(
+                f"Processed parameters (None -> empty string): {processed_params}"
+            )
 
             # Encode parameters with '+' left untouched
             encoded_params = urlencode(processed_params, safe="+")
@@ -88,7 +114,9 @@ class Vinted:
         if "recursive" in kwargs:
             del kwargs["recursive"]
 
-        logger.info(f"Executing {method.upper()} request to: {kwargs.get('url', 'unknown URL')}")
+        logger.info(
+            f"Executing {method.upper()} request to: {kwargs.get('url', 'unknown URL')}"
+        )
         response = requests.request(
             method=method,
             headers=self.headers,
@@ -113,19 +141,24 @@ class Vinted:
         *args,
         **kwargs,
     ):
-        logger.debug(f"GET request to endpoint: {endpoint.value}, format_values: {format_values}, expected status: {wanted_status_code}")
-        
+        logger.debug(
+            f"GET request to endpoint: {endpoint.value}, format_values: {format_values}, expected status: {wanted_status_code}"
+        )
+
         if format_values:
             url = self.api_url + endpoint.value.format(format_values)
             logger.debug(f"Formatted endpoint URL: {url}")
         else:
             url = self.api_url + endpoint.value
             logger.debug(f"Standard endpoint URL: {url}")
-            
+
         response = self._call(method="get", url=url, *args, **kwargs)
-        
+        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+
         if response.status_code != wanted_status_code and not kwargs.get("recursive"):
-            logger.info(f"Status code {response.status_code} != expected {wanted_status_code}, refreshing cookies and retrying")
+            logger.info(
+                f"Status code {response.status_code} != expected {wanted_status_code}, refreshing cookies and retrying"
+            )
             self.fetch_cookies()
             return self._get(
                 endpoint=endpoint,
@@ -136,7 +169,7 @@ class Vinted:
                 *args,
                 **kwargs,
             )
-        
+
         try:
             json_response = response.json()
             logger.debug(f"Successfully parsed JSON response from {endpoint.value}")
@@ -167,12 +200,22 @@ class Vinted:
         video_game_platform_ids: int | List[int] = None,
         country_ids: str | List[str] = None,
     ) -> SearchResponse:
-        logger.info(f"Starting search - query: '{query}', page: {page}, per_page: {per_page}, order: {order}")
-        logger.debug(f"Search filters - price_from: {price_from}, price_to: {price_to}, catalog_ids: {catalog_ids}")
-        logger.debug(f"Additional filters - size_ids: {size_ids}, brand_ids: {brand_ids}, status_ids: {status_ids}")
-        logger.debug(f"More filters - color_ids: {color_ids}, patterns_ids: {patterns_ids}, material_ids: {material_ids}")
-        logger.debug(f"Platform/country filters - video_game_platform_ids: {video_game_platform_ids}, country_ids: {country_ids}")
-        
+        logger.info(
+            f"Starting search - query: '{query}', page: {page}, per_page: {per_page}, order: {order}"
+        )
+        logger.debug(
+            f"Search filters - price_from: {price_from}, price_to: {price_to}, catalog_ids: {catalog_ids}"
+        )
+        logger.debug(
+            f"Additional filters - size_ids: {size_ids}, brand_ids: {brand_ids}, status_ids: {status_ids}"
+        )
+        logger.debug(
+            f"More filters - color_ids: {color_ids}, patterns_ids: {patterns_ids}, material_ids: {material_ids}"
+        )
+        logger.debug(
+            f"Platform/country filters - video_game_platform_ids: {video_game_platform_ids}, country_ids: {country_ids}"
+        )
+
         params = {
             "page": page,
             "per_page": per_page,
@@ -203,7 +246,9 @@ class Vinted:
     def search_users(
         self, query: str, page: int = 1, per_page: int = 36
     ) -> UserSearchResponse:
-        logger.info(f"Searching users with query: '{query}', page: {page}, per_page: {per_page}")
+        logger.info(
+            f"Searching users with query: '{query}', page: {page}, per_page: {per_page}"
+        )
         params = {"page": page, "per_page": per_page, "search_text": query}
         logger.debug(f"User search parameters: {params}")
         result = self._get(Endpoints.USERS, UserSearchResponse, params=params)
@@ -233,7 +278,9 @@ class Vinted:
         per_page: int = 96,
         order: SortOption = "newest_first",
     ) -> UserItemsResponse:
-        logger.info(f"Fetching user items for user_id: {user_id}, page: {page}, per_page: {per_page}, order: {order}")
+        logger.info(
+            f"Fetching user items for user_id: {user_id}, page: {page}, per_page: {per_page}, order: {order}"
+        )
         params = {"page": page, "per_page": per_page, "order": order}
         logger.debug(f"User items parameters: {params}")
         result = self._get(
@@ -249,10 +296,14 @@ class Vinted:
         per_page: int = 20,
         by: Literal["all", "user", "system"] = "all",
     ) -> UserFeedbacksResponse:
-        logger.info(f"Fetching user feedbacks for user_id: {user_id}, page: {page}, per_page: {per_page}, by: {by}")
+        logger.info(
+            f"Fetching user feedbacks for user_id: {user_id}, page: {page}, per_page: {per_page}, by: {by}"
+        )
         params = {"user_id": user_id, "page": page, "per_page": per_page, "by": by}
         logger.debug(f"User feedbacks parameters: {params}")
-        result = self._get(Endpoints.USER_FEEDBACKS, UserFeedbacksResponse, params=params)
+        result = self._get(
+            Endpoints.USER_FEEDBACKS, UserFeedbacksResponse, params=params
+        )
         logger.info(f"User feedbacks retrieved successfully for user_id: {user_id}")
         return result
 
@@ -268,7 +319,9 @@ class Vinted:
             UserFeedbacksSummaryResponse,
             params=params,
         )
-        logger.info(f"User feedbacks summary retrieved successfully for user_id: {user_id}")
+        logger.info(
+            f"User feedbacks summary retrieved successfully for user_id: {user_id}"
+        )
         return result
 
     def search_suggestions(self, query: str) -> SearchSuggestionsResponse:
@@ -289,8 +342,12 @@ class Vinted:
         status_ids: int | List[int] = None,
         color_ids: int | List[int] = None,
     ) -> FiltersResponse:
-        logger.info(f"Fetching catalog filters - query: '{query}', catalog_ids: {catalog_ids}")
-        logger.debug(f"Filter parameters - brand_ids: {brand_ids}, status_ids: {status_ids}, color_ids: {color_ids}")
+        logger.info(
+            f"Fetching catalog filters - query: '{query}', catalog_ids: {catalog_ids}"
+        )
+        logger.debug(
+            f"Filter parameters - brand_ids: {brand_ids}, status_ids: {status_ids}, color_ids: {color_ids}"
+        )
         params = {
             "search_text": query,
             "catalog_ids": catalog_ids,
@@ -313,7 +370,9 @@ class Vinted:
             InitializersResponse,
             params=params,
         )
-        logger.info(f"Catalogs list retrieved successfully, found {len(data.dtos.catalogs)} catalogs")
+        logger.info(
+            f"Catalogs list retrieved successfully, found {len(data.dtos.catalogs)} catalogs"
+        )
         return data.dtos.catalogs
 
     def fetch_offer_description(self, url: str) -> str:
@@ -334,7 +393,9 @@ class Vinted:
                 description = soup.find("div", {"itemprop": "description"})
                 if description:
                     description_text = description.get_text(strip=True)
-                    logger.info(f"Description found, length: {len(description_text)} characters")
+                    logger.info(
+                        f"Description found, length: {len(description_text)} characters"
+                    )
                     logger.debug(f"Description content: {description_text[:100]}...")
                     return description_text
                 else:
