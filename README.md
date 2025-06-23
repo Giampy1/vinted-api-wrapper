@@ -1,29 +1,36 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
 
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+<p align="center">
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge" alt="Contributors">
+  </a>
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/network/members">
+    <img src="https://img.shields.io/github/forks/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge" alt="Forks">
+  </a>
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/stargazers">
+    <img src="https://img.shields.io/github/stars/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge" alt="Stargazers">
+  </a>
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/issues">
+    <img src="https://img.shields.io/github/issues/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge" alt="Issues">
+  </a>
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/pulls">
+    <img src="https://img.shields.io/github/issues-pr/Pawikoski/vinted-api-wrapper?style=for-the-badge" alt="Pull Requests">
+  </a>
+  <a href="https://github.com/Pawikoski/vinted-api-wrapper/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge" alt="License">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/vinted-api-wrapper/">
+    <img src="https://img.shields.io/pypi/v/vinted-api-wrapper?style=for-the-badge" alt="PyPi">
+  </a>
+  <a href="https://www.python.org/downloads/">
+    <img src="https://img.shields.io/badge/python-3.10%2B-blue?style=for-the-badge" alt="Python">
+  </a>
+</p>
 
 
 
@@ -39,11 +46,9 @@
   <p align="center">
     Simple client for Vinted Developer API written in Python
     <br />
-    <a href="https://github.com/Pawikoski/vinted-api-wrapper"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Pawikoski/vinted-api-wrapper"><strong>« Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Pawikoski/vinted-api-wrapper">View Demo</a>
-    ·
     <a href="https://github.com/Pawikoski/vinted-api-wrapper/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/Pawikoski/vinted-api-wrapper/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
@@ -54,7 +59,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary>📋 Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -70,37 +75,35 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## ℹ️ About The Project
 
 The Vinted API Wrapper is a Python-based tool designed to interact with the Vinted marketplace. It provides a set of methods for fetching product data, user information, and catalog details directly from Vinted's API. The wrapper streamlines the process of making API requests, handling cookies, and parsing JSON responses into structured Python `dataclass` objects. It enables developers to search, filter, and retrieve data efficiently, making it easier to integrate Vinted's functionalities into their own applications.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
 
 
 
-### Built With
+## ⚙️ Built With
 
-* [![Python][Python]][Python-url]
-* [![requests][requests]][requests-url]
-* [![dacite][dacite]][dacite-url]
+[![Python][Python]][Python-url]
+[![requests][requests]][requests-url]
+[![dacite][dacite]][dacite-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
 
 
 
 <!-- GETTING STARTED -->
-## Getting Started & Installation
+## 🟢 Getting Started & Installation
 
 To use the Vinted API Wrapper you can clone the repository or use `pip` package (recommended)
 
@@ -138,11 +141,12 @@ proxy_url = f"http://{proxy_settings['username']}:{proxy_settings['password']}@{
 vinted = Vinted(domain="fr", proxy=proxy_url)
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
+
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## ❓Usage
 
 Using `vinted-api-wrapper` in Your Project
 
@@ -167,11 +171,12 @@ The Vinted class provides several useful methods to interact with Vinted's API. 
 
 <!-- TODO: _For more examples, please refer to the [Documentation](https://example.com)_ -->
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
+
 
 
 <!-- CONTRIBUTING -->
-## Contributing
+## 🌱 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -184,33 +189,40 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
+
+## 🏆 Top contributors:
+
+<a href="https://github.com/pawikoski/vinted-api-wrapper/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=pawikoski/vinted-api-wrapper" alt="contrib.rocks image" />
+</a>
 
 
 
 <!-- LICENSE -->
-## License
+## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
 
 
 
 <!-- CONTACT -->
-## Contact
-
-Paweł Stawikowski - pawikoski@gmail.com
-
-Project Link: [https://github.com/Pawikoski/vinted-api-wrapper](https://github.com/Pawikoski/vinted-api-wrapper)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## 📥 Contact
+  
+<a href="mailto:pawikoski@gmail.com">
+    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail">
+</a>
+<a href="https://linkedin.com/in/paweł-stawikowski">
+    <img src="https://img.shields.io/badge/-LinkedIn-blue?style=for-the-badge&logo=Linkedin&logoColor=white" alt="LinkedIn">
+</a>
+<p align="right">(<a href="#readme-top">back to top ⬆️</a>)</p>
 
 
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge
 [contributors-url]: https://github.com/Pawikoski/vinted-api-wrapper/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/Pawikoski/vinted-api-wrapper.svg?style=for-the-badge
