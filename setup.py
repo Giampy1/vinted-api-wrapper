@@ -10,7 +10,7 @@ setup(
     author="Paweł Stawikowski",
     author_email="pawikoski@gmail.com",
     packages=find_packages(),
-    url="=https://github.com/Pawikoski/vinted-api-wrapper",
+    url="https://github.com/Pawikoski/vinted-api-wrapper",
     python_requires=">=3.10",
     install_requires=["requests", "dacite", "beautifulsoup4"],
     long_description=long_description,
