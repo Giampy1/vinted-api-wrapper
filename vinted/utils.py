@@ -14,6 +14,15 @@ def parse_url_to_params(url: str):
         if not matched_params:
             raise InvalidUrlException
 
+        # Initialize a dictionary to store mapped parameters
+        mapped_params = {}
+        
+        # Check if the URL contains catalog in the path
+        catalog_path_match = re.search(r"\/catalog\/(\d+)(-[a-zA-Z0-9-]+)?", decoded_url)
+        if catalog_path_match:
+            catalog_id = catalog_path_match.group(1)
+            mapped_params["catalog_ids"] = [catalog_id]
+
         # Define the missing IDs parameters
         missing_ids_params = ["catalog", "status"]
 
@@ -21,9 +30,6 @@ def parse_url_to_params(url: str):
         params = re.findall(r"([a-z_]+)(\[\])?=([a-zA-Z 0-9._À-ú+%]*)&?", decoded_url)
         if not isinstance(matched_params.groups(), tuple):
             raise InvalidUrlException
-
-        # Initialize a dictionary to store mapped parameters
-        mapped_params = {}
 
         for param_name, is_array, param_value in params:
             # Replace spaces with '+' in param_value if they exist
