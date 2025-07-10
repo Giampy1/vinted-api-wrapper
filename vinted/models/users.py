@@ -181,7 +181,7 @@ class FeedbacksSummary:
 
 @dataclass
 class UserFeedbacksSummaryResponse(VintedResponse):
-    user_feedback_summary: Optional[FeedbacksSummary]
+    user_feedback_summary: Optional[FeedbacksSummary] = None
 
 
 @dataclass
