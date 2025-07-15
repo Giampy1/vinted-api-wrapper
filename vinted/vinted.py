@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import List, Literal
 from urllib.parse import urlencode, urlparse, urlunparse
 
-import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 from dacite import from_dict
 
@@ -13,7 +13,7 @@ from .exceptions import RateLimitExceededException
 from .models.base import VintedResponse
 from .models.filters import Catalog, FiltersResponse, InitializersResponse
 from .models.items import ItemsResponse, UserItemsResponse
-from .models.other import Domain, SortOption
+from .models.other import Domain, Language, SortOption
 from .models.search import SearchResponse, SearchSuggestionsResponse, UserSearchResponse
 from .models.users import (
     UserFeedbacksResponse,
@@ -34,11 +34,19 @@ logger = logging.getLogger(__name__)
 # Set default level to INFO, but users can override with logger.setLevel(logging.DEBUG)
 logger.setLevel(logging.INFO)
 
-
 class Vinted:
-    def __init__(self, domain: Domain = "pl", proxy: str = None) -> None:
+    def __init__(self, domain: Domain = "pl", language: Language = "en-US", proxy: str = None) -> None:
+        """
+        Initialize Vinted client with specified domain, language, and optional proxy.
+        Each domain can access its own language plus English and a few others (which depends on the domain) for API responses.
+        
+        Args:
+            domain: Vinted domain to use (e.g., "pl", "com", "fr")
+            language: Language for API responses (e.g., "en-US", "pl-PL")
+            proxy: Optional proxy URL for requests
+        """
         logger.info(
-            f"Initializing Vinted client with domain: {domain}, proxy: {'enabled' if proxy else 'disabled'}"
+            f"Initializing Vinted client with domain: {domain}, language: {language}, proxy: {'enabled' if proxy else 'disabled'}"
         )
 
         self.proxy = None
@@ -51,9 +59,23 @@ class Vinted:
         logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")
 
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'Host': f'www.vinted.{domain}',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': f'{language},*;q=0.5',
+            'Connection': 'keep-alive',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin'
         }
+
         logger.debug(f"Headers configured: {self.headers}")
+
+        # Initialize cloudscraper session
+        self.scraper = cloudscraper.create_scraper()
+        logger.debug("Cloudscraper session initialized")
 
         self.cookies = self.fetch_cookies()
         logger.info("Vinted client initialization completed successfully")
@@ -88,12 +110,31 @@ class Vinted:
 
     def fetch_cookies(self):
         logger.debug(f"Fetching cookies from: {self.base_url}")
-        response = requests.get(self.base_url, headers=self.headers, proxies=self.proxy)
+        response = self.scraper.get(self.base_url, headers=self.headers, proxies=self.proxy)
         logger.info(
             f"Cookies fetched successfully, status code: {response.status_code}"
         )
         logger.debug(f"Cookies: {response.cookies}")
         return response.cookies
+    
+    def update_cookies(self, cookies=None) -> None:
+        """
+        Update or refresh cookies for the session.
+        
+        Args:
+            cookies: Optional cookies to set. If None, fetches new cookies.
+            
+        Example:
+            vinted.update_cookies()  # Refresh cookies
+            vinted.update_cookies(custom_cookies)  # Set custom cookies
+        """
+        if cookies is None:
+            logger.info("Refreshing cookies from server")
+            self.cookies = self.fetch_cookies()
+        else:
+            logger.info("Setting custom cookies")
+            self.cookies = cookies
+            logger.debug(f"Updated cookies: {self.cookies}")
 
     def _call(self, method: Literal["get"], *args, **kwargs):
         logger.debug(
@@ -130,7 +171,7 @@ class Vinted:
         logger.info(
             f"Executing {method.upper()} request to: {kwargs.get('url', 'unknown URL')}"
         )
-        response = requests.request(
+        response = self.scraper.request(
             method=method,
             headers=self.headers,
             cookies=self.cookies,
@@ -143,6 +184,7 @@ class Vinted:
         if response.status_code == 429:
             raise RateLimitExceededException(
                 "Rate limit exceeded. Please try again later."
+            
             )
         response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
         logger.debug(f"Response content: {response.text[:100]}...")  # Log
@@ -191,7 +233,7 @@ class Vinted:
             result = from_dict(response_model, json_response)
             logger.info(f"Successfully converted response to {response_model.__name__}")
             return result
-        except requests.exceptions.JSONDecodeError:
+        except (ValueError, Exception) as e:
             error_msg = f"HTTP {response.status_code}"
             logger.error(f"JSON decode error for {endpoint.value}: {error_msg}")
             return {"error": error_msg}
@@ -399,7 +441,7 @@ class Vinted:
         logger.info(f"Fetching offer description from URL: {url}")
         try:
             logger.debug("Making request to fetch offer description")
-            response = requests.get(
+            response = self.scraper.get(
                 url, headers=self.headers, proxies=self.proxy, cookies=self.cookies
             )
             if response.status_code == 200:
@@ -419,6 +461,6 @@ class Vinted:
             else:
                 logger.error(f"Error fetching description: {response.status_code}")
                 return None
-        except requests.RequestException as e:
+        except Exception as e:
             logger.error(f"An error occurred while fetching the description: {e}")
             return None
