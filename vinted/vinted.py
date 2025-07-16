@@ -34,12 +34,15 @@ logger = logging.getLogger(__name__)
 # Set default level to INFO, but users can override with logger.setLevel(logging.DEBUG)
 logger.setLevel(logging.INFO)
 
+
 class Vinted:
-    def __init__(self, domain: Domain = "pl", language: Language = "en-US", proxy: str = None) -> None:
+    def __init__(
+        self, domain: Domain = "pl", language: Language = "en-US", proxy: str = None
+    ) -> None:
         """
         Initialize Vinted client with specified domain, language, and optional proxy.
         Each domain can access its own language plus English and a few others (which depends on the domain) for API responses.
-        
+
         Args:
             domain: Vinted domain to use (e.g., "pl", "com", "fr")
             language: Language for API responses (e.g., "en-US", "pl-PL")
@@ -59,16 +62,16 @@ class Vinted:
         logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")
 
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-            'Host': f'www.vinted.{domain}',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Accept-Language': f'{language},*;q=0.5',
-            'Connection': 'keep-alive',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin'
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Host": f"www.vinted.{domain}",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": f"{language},*;q=0.5",
+            "Connection": "keep-alive",
+            "X-Requested-With": "XMLHttpRequest",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
         }
 
         logger.debug(f"Headers configured: {self.headers}")
@@ -94,7 +97,7 @@ class Vinted:
         """
         logger.setLevel(level)
         logger.info(f"Logging level set to: {logging.getLevelName(level)}")
-    
+
     def update_proxy(self, proxy: str) -> None:
         """
         Update the proxy configuration for the Vinted client.
@@ -110,20 +113,22 @@ class Vinted:
 
     def fetch_cookies(self):
         logger.debug(f"Fetching cookies from: {self.base_url}")
-        response = self.scraper.get(self.base_url, headers=self.headers, proxies=self.proxy)
+        response = self.scraper.get(
+            self.base_url, headers=self.headers, proxies=self.proxy
+        )
         logger.info(
             f"Cookies fetched successfully, status code: {response.status_code}"
         )
         logger.debug(f"Cookies: {response.cookies}")
         return response.cookies
-    
+
     def update_cookies(self, cookies=None) -> None:
         """
         Update or refresh cookies for the session.
-        
+
         Args:
             cookies: Optional cookies to set. If None, fetches new cookies.
-            
+
         Example:
             vinted.update_cookies()  # Refresh cookies
             vinted.update_cookies(custom_cookies)  # Set custom cookies
@@ -182,9 +187,9 @@ class Vinted:
         logger.info(f"Response size: {len(response.content) / 1024:.2f} KB")
         logger.info(f"Request completed with status code: {response.status_code}")
         if response.status_code == 429:
+            logger.error("Rate limit exceeded (HTTP 429)")
             raise RateLimitExceededException(
                 "Rate limit exceeded. Please try again later."
-            
             )
         response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
         logger.debug(f"Response content: {response.text[:100]}...")  # Log
@@ -233,10 +238,9 @@ class Vinted:
             result = from_dict(response_model, json_response)
             logger.info(f"Successfully converted response to {response_model.__name__}")
             return result
-        except (ValueError, Exception) as e:
-            error_msg = f"HTTP {response.status_code}"
-            logger.error(f"JSON decode error for {endpoint.value}: {error_msg}")
-            return {"error": error_msg}
+        except Exception as e:
+            logger.error(f"Failed to parse JSON response from {endpoint.value}: {e}")
+            return {"error": f"HTTP {response.status_code}"}
 
     def search(
         self,
