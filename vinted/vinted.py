@@ -7,6 +7,7 @@ from urllib.parse import urlencode, urlparse, urlunparse
 import cloudscraper
 from bs4 import BeautifulSoup
 from dacite import from_dict
+from fake_useragent import UserAgent
 
 from .endpoints import Endpoints
 from .exceptions import RateLimitExceededException
@@ -34,6 +35,9 @@ logger = logging.getLogger(__name__)
 # Set default level to INFO, but users can override with logger.setLevel(logging.DEBUG)
 logger.setLevel(logging.INFO)
 
+ua = UserAgent()
+# Create a user agent instance for random user agent generation
+# This will be used in the headers for requests to mimic a real browser
 
 class Vinted:
     def __init__(
@@ -59,19 +63,32 @@ class Vinted:
 
         self.base_url = f"https://www.vinted.{domain}"
         self.api_url = f"{self.base_url}/api/v2"
-        logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")
 
+        logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")        
+        
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            # Basic request headers
+            "User-Agent": ua.random,
             "Host": f"www.vinted.{domain}",
-            "Accept": "application/json, text/plain, */*",
+            
+            # Accept headers
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate, br, zstd",
             "Accept-Language": f"{language},*;q=0.5",
+            
+            # Connection and transfer headers
             "Connection": "keep-alive",
-            "X-Requested-With": "XMLHttpRequest",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
+            "TE": "Trailers",
+            
+            # Security and privacy headers
+            "DNT": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "Upgrade-Insecure-Requests": "1",
+            
+            # Priority header
+            "Priority": "u=0, i",
         }
 
         logger.debug(f"Headers configured: {self.headers}")
