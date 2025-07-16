@@ -12,4 +12,3 @@ class Endpoints(Enum):
     USER_ITEMS = "/users/{}/items"
     USER_FEEDBACKS_SUMMARY = "/user_feedbacks/summary"
     SEARCH_SUGGESTIONS = "/search_suggestions"
-    OAUTH = "/oauth/token" # Mobile OAuth
