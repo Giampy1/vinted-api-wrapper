@@ -1,5 +1,7 @@
 import logging
 import time
+import math
+import random
 from copy import deepcopy
 from typing import List, Literal
 from urllib.parse import urlencode, urlparse, urlunparse
@@ -203,12 +205,17 @@ class Vinted:
         if "recursive" in kwargs:
             del kwargs["recursive"]
 
+        # Handle custom headers
+        headers = kwargs.pop("headers", self.headers)
+        if headers != self.headers:
+            logger.debug(f"Using custom headers: {headers}")
+
         logger.info(
             f"Executing {method.upper()} request to: {kwargs.get('url', 'unknown URL')}"
         )
         response = self.scraper.request(
             method=method,
-            headers=self.headers,
+            headers=headers,
             cookies=self.cookies,
             proxies=self.proxy,
             *args,
@@ -310,7 +317,7 @@ class Vinted:
         params = {
             "page": page,
             "per_page": per_page,
-            "time": time.time(),
+            "time": math.floor(time.time() - random.random() * 60 * 3),
             "search_text": query,
             "price_from": price_from,
             "price_to": price_to,
@@ -330,7 +337,14 @@ class Vinted:
             params.update(parse_url_to_params(url))
 
         logger.debug(f"Final search parameters: {params}")
-        result = self._get(Endpoints.CATALOG_ITEMS, SearchResponse, params=params)
+        
+        # Add Referer header only if url parameter is provided
+        headers = self.headers.copy()
+        if url:
+            headers["Referer"] = url
+            logger.debug(f"Added Referer header: {headers['Referer']}")
+        
+        result = self._get(Endpoints.CATALOG_ITEMS, SearchResponse, params=params, headers=headers)
         logger.info("Search completed successfully")
         return result
 
