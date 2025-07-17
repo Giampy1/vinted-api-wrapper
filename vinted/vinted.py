@@ -17,7 +17,7 @@ from .models.base import VintedResponse
 from .models.filters import Catalog, FiltersResponse, InitializersResponse
 from .models.items import ItemsResponse, UserItemsResponse
 from .models.other import Domain, Language, SortOption
-from .models.search import SearchResponse, SearchSuggestionsResponse, UserSearchResponse
+from .models.search import SearchResponse, SearchSuggestionsResponse, UserSearchResponse, ShippingResponse
 from .models.users import (
     UserFeedbacksResponse,
     UserFeedbacksSummaryResponse,
@@ -479,7 +479,41 @@ class Vinted:
             f"Catalogs list retrieved successfully, found {len(data.dtos.catalogs)} catalogs"
         )
         return data.dtos.catalogs
-
+    
+    def fetch_shipping_details(self, item_id: int) -> ShippingResponse:
+        """
+        Fetches shipping details for a specific item.
+        
+        Args:
+            item_id: The ID of the item to fetch shipping details for
+            
+        Returns:
+            ShippingResponse: Contains shipping details including pickup options, 
+                            multiple shipping options availability, free shipping status,
+                            pricing information, and potential discounts
+                            
+        Raises:
+            RateLimitExceededException: If rate limit is exceeded
+            requests.exceptions.HTTPError: If the request fails
+            
+        Example:
+            shipping = vinted.fetch_shipping_details(123456)
+            if shipping.shipping_details.free_shipping:
+                print("Free shipping available!")
+            print(f"Shipping price: {shipping.shipping_details.price.amount} {shipping.shipping_details.price.currency_code}")
+        """
+        logger.info(f"Fetching shipping details for item_id: {item_id}")
+        logger.debug(f"Requesting shipping details from endpoint: {Endpoints.SHIPPING_DETAILS.value}")
+        
+        try:
+            result = self._get(Endpoints.SHIPPING_DETAILS, ShippingResponse, item_id)
+            logger.info(f"Shipping details retrieved successfully for item_id: {item_id}")
+            logger.debug(f"Response code: {result.code}, Free shipping: {result.shipping_details.free_shipping}")
+            return result
+        except Exception as e:
+            logger.error(f"Failed to fetch shipping details for item_id {item_id}: {e}")
+            raise
+        
     def fetch_offer_description(self, url: str) -> str:
         """
         Fetches the offer description from a given Vinted item URL.
