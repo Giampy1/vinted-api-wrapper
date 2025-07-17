@@ -35,9 +35,10 @@ logger = logging.getLogger(__name__)
 # Set default level to INFO, but users can override with logger.setLevel(logging.DEBUG)
 logger.setLevel(logging.INFO)
 
-ua = UserAgent()
-# Create a user agent instance for random user agent generation
-# This will be used in the headers for requests to mimic a real browser
+ua = UserAgent(platforms=['windows', 'macos'], browsers=['chrome', 'firefox', 'safari'])
+# Use a consistent user agent throughout the session to avoid detection
+# Choose a recent Chrome user agent for better compatibility
+
 
 class Vinted:
     def __init__(
@@ -63,13 +64,15 @@ class Vinted:
 
         self.base_url = f"https://www.vinted.{domain}"
         self.api_url = f"{self.base_url}/api/v2"
+        self.host = f"www.vinted.{domain}"
+        self.user_agent = ua.random
 
         logger.debug(f"Base URL: {self.base_url}, API URL: {self.api_url}")        
         
         self.headers = {
             # Basic request headers
-            "User-Agent": ua.random,
-            "Host": f"www.vinted.{domain}",
+            "User-Agent": self.user_agent,
+            "Host": self.host,
             
             # Accept headers
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -130,8 +133,18 @@ class Vinted:
 
     def fetch_cookies(self):
         logger.debug(f"Fetching cookies from: {self.base_url}")
-        response = self.scraper.get(
-            self.base_url, headers=self.headers, proxies=self.proxy
+
+        headers = {
+            "User-Agent": self.user_agent,
+            "Host": self.host,
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Connection": "keep-alive",
+            "TE": "trailers",
+            "DNT": "1"
+        }
+
+        response = self.scraper.head(
+            f"{self.base_url}/how_it_works", headers=headers, proxies=self.proxy, allow_redirects=True
         )
         logger.info(
             f"Cookies fetched successfully, status code: {response.status_code}"
@@ -485,3 +498,6 @@ class Vinted:
         except Exception as e:
             logger.error(f"An error occurred while fetching the description: {e}")
             return None
+        
+
+        
